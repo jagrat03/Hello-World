@@ -1,4 +1,4 @@
-# AB Testing AI Agent
+# Automated AB Testing Framework
 
 End-to-end A/B testing agent that designs experiments, manages traffic splits, schedules ramp-ups, and runs full statistical analysis (frequentist + Bayesian).
 
