@@ -14,35 +14,20 @@ def decode_secret_message(url):
     response.raise_for_status()
 
     soup = BeautifulSoup(response.text, "html.parser")
-    table = soup.find("table")
+    rows = soup.find("table").find_all("tr")
 
-    rows = table.find_all("tr")
-
-    # Detect column order from header row
-    header_cells = rows[0].find_all(["th", "td"])
-    header = [c.get_text().strip().lower() for c in header_cells]
-
-    char_idx = next((i for i, h in enumerate(header) if "char" in h), 0)
-    x_idx = next(
-        (i for i, h in enumerate(header) if h in ("x", "x coordinate", "x-coordinate")),
-        1,
-    )
-    y_idx = next(
-        (i for i, h in enumerate(header) if h in ("y", "y coordinate", "y-coordinate")),
-        2,
-    )
-
+    # Table columns: x-coordinate | Character | y-coordinate
     grid = {}
     max_x = 0
     max_y = 0
 
-    for row in rows[1:]:
+    for row in rows[1:]:  # skip header
         cols = row.find_all("td")
-        if len(cols) <= max(char_idx, x_idx, y_idx):
+        if len(cols) < 3:
             continue
-        char = cols[char_idx].get_text().strip()
-        x_text = cols[x_idx].get_text().strip()
-        y_text = cols[y_idx].get_text().strip()
+        x_text = cols[0].get_text().strip()
+        char = cols[1].get_text().strip()
+        y_text = cols[2].get_text().strip()
         if not char or not x_text.lstrip("-").isdigit() or not y_text.lstrip("-").isdigit():
             continue
         x, y = int(x_text), int(y_text)
